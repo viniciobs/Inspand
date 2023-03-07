@@ -5,7 +5,7 @@ using FluentValidation.Results;
 
 namespace Domain.Services;
 
-public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entity<TEntity>
+public class Service<TEntity> : IService<TEntity> where TEntity : Entity<TEntity>
 {
     protected readonly IRepository<TEntity> _repository;
 
