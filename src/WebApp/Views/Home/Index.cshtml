@@ -5,13 +5,7 @@
 @model IEnumerable<WebApp.Models.UserDetail>;
 
 <div class="d-flex flex-row flex-row-reverse">
-    <button 
-        type="button" 
-        class="btn btn-primary btn-sm btn-new"
-        data-toggle="modal"
-        data-target="#form-modal">
-        Novo
-    </button>
+   <a asp-page="/Home/New">Novo</a>
 </div>
 
 <table class="table table-striped">
@@ -33,34 +27,14 @@
                 <td>@user.Email</td>
                 <td>@user.Age</td>
                 <td class="options" id="@user.Id">
-                    <span>
-                        <partial name="Shared/EyeIcon" />
+                    @*<span>
+                        <partial name="Shared/Icons/PencilIcon" />
                     </span>
                     <span>
-                        <partial name="Shared/PencilIcon" />
-                    </span>
-                    <span>
-                        <partial name="Shared/TrashIcon" />
-                    </span>
+                        <partial name="Shared/Icons/TrashIcon" />
+                    </span>*@
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-<div id="modal" class="modal fade" role="dialog" />
-
-@section scripts{
-    <script>
-        $(function ()
-        {
-            $(".btn-new").click(function ()
-            {
-                $("#modal").load("FormModal", function ()
-                {
-                    $("#modal").modal();
-                })
-            });
-        })
-    </script>
-}

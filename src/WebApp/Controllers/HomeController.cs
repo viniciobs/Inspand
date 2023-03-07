@@ -30,28 +30,33 @@ public class HomeController : Controller
         return View(users);
     }
 
-    public async Task New([FromBody] UserNew user)
+    public async Task<IActionResult> New(UserNew user)
     {
-        _logger.LogInformation("Creating user...");
-
-        var result = await _service.InsertAsync(new()
+        if (user is not null)
         {
-            Age = user.Age,
-            Email = user.Email,
-            LastName = user.LastName,
-            Name = user.Name,
-            Password = user.Password.ToBase64()
-        });
+            _logger.LogInformation("Creating user...");
 
-        if (result.IsValid is false) 
-        {
-            _logger.LogInformation(string.Join(';', result.Errors.Select(x => x.ErrorMessage)));
-            return;
+            var result = await _service.InsertAsync(new()
+            {
+                Age = user.Age,
+                Email = user.Email,
+                LastName = user.LastName,
+                Name = user.Name,
+                Password = user.Password.ToBase64()
+            });
+
+            if (result.IsValid is false)
+            {
+                _logger.LogInformation(string.Join(';', result.Errors.Select(x => x.ErrorMessage)));
+                return View("Shared/Error");
+            }
+
+            _emailService.SendEmail(
+                to: user.Email,
+                message: $"Olá, {user.Name}. Seja muito bem-vindo(a)!");
         }
-
-        _emailService.SendEmail(
-            to: user.Email,
-            message: $"Olá, {user.Name}. Seja muito bem-vindo(a)!");
+        
+        return View();
     }
 
     public IActionResult Privacy()

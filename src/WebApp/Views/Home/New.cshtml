@@ -1,0 +1,22 @@
+﻿@page "~/Home/New";
+
+@{
+    ViewData["Title"] = "Cadastrar novo usuário";
+}
+
+@model WebApp.Models.UserNew;
+
+@using (Html.BeginForm("New", "Home", FormMethod.Post))
+{
+    <span>Nome:</span> @Html.TextBoxFor(m => m.Name)
+    <br />
+    <span>Sobrenome: </span> @Html.TextBoxFor(m => m.LastName)
+    <br />
+    <span>E-mail: </span> @Html.TextBoxFor(m => m.Email)
+    <br />
+    <span>Login: </span> @Html.TextBoxFor(m => m.Login)
+    <br />
+    <span>Senha: </span> @Html.TextBoxFor(m => m.Password)
+
+    <input id="Submit" type="submit" value="Salvar" />
+}
