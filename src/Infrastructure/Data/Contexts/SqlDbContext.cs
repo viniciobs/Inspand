@@ -2,26 +2,17 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Domain.Interfaces;
+using Domain.Entities;
 
 namespace Infrastructure.Data.Contexts;
 
 public class SqlDbContext : DbContext
 {
-    private readonly IDomainEventHandler _domainEventService;
+    public SqlDbContext(DbContextOptions<SqlDbContext> option) 
+        : base(option)
+    { }
 
-    public SqlDbContext(DbContextOptions<SqlDbContext> options, IDomainEventHandler domainEventService) : base(options)
-        => _domainEventService = domainEventService;
-
-    public SqlDbContext(DbContextOptions<SqlDbContext> option) : base(option) { }
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var result = await base.SaveChangesAsync(cancellationToken);
-
-        await DispatchEvents();
-
-        return result;
-    }
+    public DbSet<User> User { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,30 +30,5 @@ public class SqlDbContext : DbContext
         }
 
         base.OnModelCreating(modelBuilder);
-    }
-
-    private async Task DispatchEvents()
-    {
-        while (true)
-        {
-            try
-            {
-                var domainEventEntity = ChangeTracker.Entries<IHasDomainEvent>()
-                  .Select(x => x.Entity.DomainEvents)
-                  .SelectMany(x => x)
-                  .Where(domainEvent => !domainEvent.IsPublished)
-                  .FirstOrDefault();
-
-                if (domainEventEntity is null) break;
-
-                domainEventEntity.IsPublished = true;
-
-                await _domainEventService.Publish(domainEventEntity);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
     }
 }
